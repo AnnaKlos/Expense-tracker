@@ -61,7 +61,7 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between sm:p-24 p-4">
-      <div className="z-10 max-w-2xl w-full items-center justify-between font-mono text-sm">
+      <div className="z-10 max-w-2xl w-full items-center justify-between text-sm">
         <h1 className="text-4xl p-4 text-center">Expense Tracker</h1>
         <div className="bg-slate-800 p-4 rounded-lg">
           <form className="grid grid-cols-6 items-center text-black">
