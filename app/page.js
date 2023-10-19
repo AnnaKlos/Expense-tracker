@@ -4,9 +4,11 @@ import {
   collection,
   addDoc,
   getDoc,
+  deleteDoc,
   QuerySnapshot,
   onSnapshot,
   query,
+  doc,
 } from "firebase/firestore";
 import { db } from "./firebase";
 
@@ -35,14 +37,14 @@ export default function Home() {
       let itemsArr = [];
 
       querySnapshot.forEach((doc) => {
-        itemsArr.push({ ...doc.data(), id: doc.id });
+        itemsArr.push({ ...doc.data(), id: doc?.id });
       });
       setItems(itemsArr);
 
       // Read total from itemsArr
       const calculateTotal = () => {
         const totalPrice = itemsArr.reduce(
-          (sum, item) => sum + parseFloat(item.price),
+          (sum, item) => sum + parseFloat(item?.price),
           0
         );
         setTotal(totalPrice);
@@ -53,6 +55,9 @@ export default function Home() {
   }, []);
 
   // Delete items ftom db
+  const deleteItem = async (id) => {
+    await deleteDoc(doc(db, "items", id));
+  };
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between sm:p-24 p-4">
@@ -61,14 +66,14 @@ export default function Home() {
         <div className="bg-slate-800 p-4 rounded-lg">
           <form className="grid grid-cols-6 items-center text-black">
             <input
-              value={newItem.name}
+              value={newItem?.name}
               onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
               className="col-span-3 p-3 border"
               type="text"
               placeholder="Enter Item"
             />
             <input
-              value={newItem.price}
+              value={newItem?.price}
               onChange={(e) =>
                 setNewItem({ ...newItem, price: e.target.value })
               }
@@ -92,7 +97,9 @@ export default function Home() {
                   <span className="capitalize">{item?.name}</span>
                   <span>${item?.price}</span>
                 </div>
-                <button className="ml-8 p-4 border-l-2 border-slate-900 hover:bg-slate-900 w-16">
+                <button
+                  onClick={() => deleteItem(item?.id)}
+                  className="ml-8 p-4 border-l-2 border-slate-900 hover:bg-slate-900 w-16">
                   x
                 </button>
               </li>
