@@ -1,13 +1,58 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import {
+  collection,
+  addDoc,
+  getDoc,
+  QuerySnapshot,
+  onSnapshot,
+  query,
+} from "firebase/firestore";
+import { db } from "./firebase";
 
 export default function Home() {
-  const [items, setItems] = useState([
-    { name: "Coffee", price: 4.95 },
-    { name: "Movie", price: 14.95 },
-    { name: "Popcorn", price: 9.95 },
-  ]);
+  const [items, setItems] = useState([]);
+  const [newItem, setNewItem] = useState({ name: "", price: "" });
   const [total, setTotal] = useState(0);
+
+  // Add item to db
+  const addItem = async (e) => {
+    e.preventDefault();
+    if (newItem.name !== "" && newItem.price !== "") {
+      // setItems([...items, newItem]);
+      await addDoc(collection(db, "items"), {
+        name: newItem?.name.trim(),
+        price: newItem?.price,
+      });
+      setNewItem({ name: "", price: "" });
+    }
+  };
+
+  // Read items from db
+  useEffect(() => {
+    const q = query(collection(db, "items"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      let itemsArr = [];
+
+      querySnapshot.forEach((doc) => {
+        itemsArr.push({ ...doc.data(), id: doc.id });
+      });
+      setItems(itemsArr);
+
+      // Read total from itemsArr
+      const calculateTotal = () => {
+        const totalPrice = itemsArr.reduce(
+          (sum, item) => sum + parseFloat(item.price),
+          0
+        );
+        setTotal(totalPrice);
+      };
+      calculateTotal();
+      return () => unsubscribe();
+    });
+  }, []);
+
+  // Delete items ftom db
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between sm:p-24 p-4">
@@ -16,16 +61,23 @@ export default function Home() {
         <div className="bg-slate-800 p-4 rounded-lg">
           <form className="grid grid-cols-6 items-center text-black">
             <input
+              value={newItem.name}
+              onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
               className="col-span-3 p-3 border"
               type="text"
               placeholder="Enter Item"
             />
             <input
+              value={newItem.price}
+              onChange={(e) =>
+                setNewItem({ ...newItem, price: e.target.value })
+              }
               className="col-span-2 p-3 border mx-3"
               type="number"
               placeholder="Enter $"
             />
             <button
+              onClick={addItem}
               className="text-white bg-slate-950 hover:bg-slate-900 p-3 text-xl"
               type="submit">
               +
