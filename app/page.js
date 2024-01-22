@@ -3,9 +3,7 @@ import React, { useState, useEffect } from "react";
 import {
   collection,
   addDoc,
-  getDoc,
   deleteDoc,
-  querySnapshot,
   onSnapshot,
   query,
   doc,
@@ -16,13 +14,11 @@ export default function Home() {
   const [items, setItems] = useState([]);
   const [newItem, setNewItem] = useState({ name: "", price: "" });
   const [total, setTotal] = useState(0);
-  const [update, setUpdate] = useState(false);
 
   // Add item to db
   const addItem = async (e) => {
     e.preventDefault();
     if (newItem.name !== "" && newItem.price !== "") {
-      // setItems([...items, newItem]);
       await addDoc(collection(db, "items"), {
         name: newItem?.name.trim(),
         price: newItem?.price,
@@ -30,17 +26,6 @@ export default function Home() {
       setNewItem({ name: "", price: "" });
     }
   };
-
-  // Update items from db
-  const updateItem = async (e) => {
-    console.log(e);
-    setUpdate(!update);
-  };
-  console.log(update);
-  // updateDoc(frankDocRef, {
-  //   age: 13,
-  //   "favorites.color": "Red",
-  // });
 
   // Read items from db
   useEffect(() => {
@@ -113,27 +98,10 @@ export default function Home() {
               <li
                 key={id}
                 className="my-4 w-full flex justify-between text-white bg-slate-950">
-                {update ? (
-                  <div className="p-2 w-full flex justify-between ">
-                    <input
-                      className="capitalize text-white bg-slate-700 p-2 rounded-lg"
-                      value={item?.name}
-                      onChange={(e) => e.target.value}></input>
-                    <input
-                      className="text-white bg-slate-700 p-2"
-                      value={item?.price}></input>
-                  </div>
-                ) : (
                   <div className="p-4 w-full flex justify-between ">
                     <span className="capitalize ">{item?.name}</span>
                     <span>${item?.price}</span>
                   </div>
-                )}
-                <button
-                  className="ml-8 p-4 border-l-2 border-slate-900 hover:bg-slate-900"
-                  onClick={() => updateItem(item.id)}>
-                  edit
-                </button>
                 <button
                   onClick={() => deleteItem(item?.id)}
                   className=" p-4 border-l-2 border-slate-900 hover:bg-slate-900 w-16">
