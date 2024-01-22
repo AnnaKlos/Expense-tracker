@@ -3,9 +3,7 @@ import React, { useState, useEffect } from "react";
 import {
   collection,
   addDoc,
-  getDoc,
   deleteDoc,
-  QuerySnapshot,
   onSnapshot,
   query,
   doc,
@@ -21,7 +19,6 @@ export default function Home() {
   const addItem = async (e) => {
     e.preventDefault();
     if (newItem.name !== "" && newItem.price !== "") {
-      // setItems([...items, newItem]);
       await addDoc(collection(db, "items"), {
         name: newItem?.name.trim(),
         price: newItem?.price,
@@ -54,7 +51,7 @@ export default function Home() {
     });
   }, []);
 
-  // Delete items ftom db
+  // Delete items from db
   const deleteItem = async (id) => {
     await deleteDoc(doc(db, "items", id));
   };
@@ -65,14 +62,22 @@ export default function Home() {
         <h1 className="text-4xl p-4 text-center">Expense Tracker</h1>
         <div className="bg-slate-800 p-4 rounded-lg">
           <form className="grid grid-cols-6 items-center text-black">
+            <label htmlFor="item" hidden sr-only="true">
+              Item
+            </label>
             <input
+              id="item"
               value={newItem?.name}
               onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
               className="col-span-3 p-3 border"
               type="text"
               placeholder="Enter Item"
             />
+            <label htmlFor="cost" hidden sr-only="true">
+              Cost
+            </label>
             <input
+              id="cost"
               value={newItem?.price}
               onChange={(e) =>
                 setNewItem({ ...newItem, price: e.target.value })
@@ -88,18 +93,18 @@ export default function Home() {
               +
             </button>
           </form>
-          <ul>
+          <ul data-testid="items">
             {items?.map((item, id) => (
               <li
                 key={id}
                 className="my-4 w-full flex justify-between text-white bg-slate-950">
-                <div className="p-4 w-full flex justify-between ">
-                  <span className="capitalize">{item?.name}</span>
-                  <span>${item?.price}</span>
-                </div>
+                  <div className="p-4 w-full flex justify-between ">
+                    <span className="capitalize ">{item?.name}</span>
+                    <span>${item?.price}</span>
+                  </div>
                 <button
                   onClick={() => deleteItem(item?.id)}
-                  className="ml-8 p-4 border-l-2 border-slate-900 hover:bg-slate-900 w-16">
+                  className=" p-4 border-l-2 border-slate-900 hover:bg-slate-900 w-16">
                   x
                 </button>
               </li>
