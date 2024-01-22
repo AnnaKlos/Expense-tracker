@@ -8,7 +8,7 @@ test("it render component with header and a form", () => {
   const title = screen.getByText(/expense tracker/i);
   const expenceInput = screen.getByRole("textbox");
   const costInput = screen.getByRole("spinbutton");
-  const addButton = screen.getByRole("button", { name: /\+/i });
+  const addButton = screen.getByRole("button", { name: "+" });
 
   expect(title).toBeInTheDocument();
   expect(expenceInput).toBeInTheDocument();
